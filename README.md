@@ -1,2 +1,2 @@
 # KolkoKrzyzyk
-Pracownia języków skryptowych - Zad1. Kołko krzyżyk
+Pracownia języków skryptowych - Zad1. Kółko krzyżyk
