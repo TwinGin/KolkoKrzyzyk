@@ -1,0 +1,349 @@
+#!/bin/bash
+koniec_gry=0
+poprawne_pole=0
+ruch_gracza="0"
+czy_komputer=1
+znak_kompuera=2;
+plansza=(5 5 5 5 5 5 5 5 5)
+wczytano_gre=0
+wyjdz=0
+function wyswietl_plansze() {
+	#for POLE in {0..8}
+	#do
+		clear
+		echo "Wpisz liczbe od 0 do 8 gdzie 0 to lewe gorne pole a 8 to prawe dolne"
+		echo "Aby zapisac partie nalezy wpisac slowo: zapisz"
+		a1=" "
+		if [[ ${plansza[0]} -eq 1 ]]
+		then a1="X"
+		elif [[ ${plansza[0]} -eq 0 ]]
+		then a1="O"
+		else a1=" "
+		fi
+
+		a2=" "
+		if [[ ${plansza[1]} -eq 1 ]]
+		then a2="X"
+		elif [[ ${plansza[1]} -eq 0 ]]
+		then a2="O"
+		else a2=" "
+		fi
+		
+		a3=" "
+		if [[ ${plansza[2]} -eq 1 ]]
+		then a3="X"
+		elif [[ ${plansza[2]} -eq 0 ]]
+		then a3="O"
+		else a3=" "
+		fi
+
+		b1=" "
+		if [[ ${plansza[3]} -eq 1 ]]
+		then b1="X"
+		elif [[ ${plansza[3]} -eq 0 ]]
+		then b1="O"
+		else b1=" "
+		fi
+
+		b2=" "
+		if [[ ${plansza[4]} -eq 1 ]]
+		then b2="X"
+		elif [[ ${plansza[4]} -eq 0 ]]
+		then b2="O"
+		else b2=" "
+		fi
+
+		b3=" "
+		if [[ ${plansza[5]} -eq 1 ]]
+		then b3="X"
+		elif [[ ${plansza[5]} -eq 0 ]]
+		then b3="O"
+		else b3=" "
+		fi
+
+		c1=" "
+		if [[ ${plansza[6]} -eq 1 ]]
+		then c1="X"
+		elif [[ ${plansza[6]} -eq 0 ]]
+		then c1="O"
+		else c1=" "
+		fi
+
+		c2=" "
+		if [[ ${plansza[7]} -eq 1 ]]
+		then c2="X"
+		elif [[ ${plansza[7]} -eq 0 ]]
+		then c2="O"
+		else c2=" "
+		fi
+
+		c3=" "
+		if [[ ${plansza[8]} -eq 1 ]]
+		then c3="X"
+		elif [[ ${plansza[8]} -eq 0 ]]
+		then c3="O"
+		else c3=" "
+		fi
+		#clear
+		echo "${a1} | ${a2} | ${a3}"
+		echo "----------"
+		echo "${b1} | ${b2} | ${b3}"
+		echo "---------"
+		echo "${c1} | ${c2} | ${c3}"
+		#((licznik=licznik+1))
+		#if [ $(($licznik % 3)) == 0 ]
+		#then
+		#	echo "wdkawdwkal"
+		#fi
+	#done
+}
+
+
+function czy_trzy_zgodne_symbole() {
+	if [[ ${plansza[$1]} -eq ${plansza[$2]} && ${plansza[$2]} -eq ${plansza[$3]} && ${plansza[$1]} -ne 5 ]]
+	then
+		koniec_gry=1
+		wyswietl_plansze
+		if [[ ${plansza[$1]} -eq 1 ]]
+		then
+			echo "X wygral"
+		else
+			echo "O wygral"	
+		fi
+
+	fi
+}
+
+function wygrana() {
+	 if [ "${koniec_gry}" -eq "0" ]
+    	 then
+        	 czy_trzy_zgodne_symbole 0 1 2
+	 fi
+	 if [ "${koniec_gry}" -eq "0" ]
+	 then
+		 czy_trzy_zgodne_symbole 0 4 8
+	 fi
+	 if [ "${koniec_gry}" -eq "0" ]
+	 then
+	 	czy_trzy_zgodne_symbole 2 4 6 
+	 fi
+	 if [ "${koniec_gry}" -eq "0" ]
+	 then
+		czy_trzy_zgodne_symbole 3 4 5
+	 fi
+	 if [ "${koniec_gry}" -eq "0" ]
+	 then
+	 	czy_trzy_zgodne_symbole 6 7 8
+	 fi
+	 if [ "${koniec_gry}" -eq "0" ]
+	 then
+		czy_trzy_zgodne_symbole 0 3 6
+	 fi
+	 if [ "${koniec_gry}" -eq "0" ]
+	 then
+		czy_trzy_zgodne_symbole 1 4 7
+	 fi
+	 if [ "${koniec_gry}" -eq "0" ]
+	 then
+		czy_trzy_zgodne_symbole 2 5 8
+	 fi
+}
+
+function wybor_opcji() 
+{
+	zle_pole=1
+	max=8
+	min=0
+	while [ $zle_pole -eq 1 ]
+	do
+		read pole
+		if [[ $((pole)) == $pole ]]
+		then
+			if [[ $((pole)) -ge 0 && $((pole)) -le 8 ]]
+			then
+				if [[ ${plansza[$pole]} -ne 5 ]]
+				then
+				       	zle_pole=1
+					echo "pole zajete"
+				else
+					zle_pole=0
+					if [[ $1 -eq 0 ]]
+					then
+						plansza[$pole]=1
+						ruch_gracza="1"
+					else
+						plansza[$pole]=0
+						ruch_gracza="0"
+					fi
+				fi
+			fi
+		elif [[ $pole -eq "zapisz" ]]
+	        then
+			rm -f savegame
+			echo "zapisano"
+		        for i in {0..8}
+			do
+				 echo ${plansza[$i]} >> savegame
+			done
+			echo $ruch_gracza >> savegame
+			echo $czy_komputer >> savegame
+			echo $znak_komputera >> savegame
+		       	cat savegame
+			exit 0
+		fi
+	done
+}
+
+function wczytaj_gre()
+{
+	echo "czy wczytac gre? TAK:1 NIE:2"
+	read wczytanie
+	if [[ $((wczytanie)) == $wczytanie ]]
+	then
+		if [[ $wczytanie -eq 1 ]]
+		then
+			n=0
+			while IFS= read -r line
+		       	do
+				if [[ $n -eq 9 ]]
+				then
+					ruch_gracza=$((line))
+				elif [[ $n -eq 10 ]]
+				then
+					czy_komputer=$((line))
+				elif [[ $n -eq 11 ]]
+				then
+					znak_komputera=$((line))
+				fi
+				
+				plansza[$n]=$line
+				n=$((n+1))
+			done < savegame
+			wczytano_gre=1
+		fi
+	fi
+}
+
+function ruch_komputera()
+{
+	dobre_pole=0
+	znak_do_planszy=0
+	if [[ $znak_komputera -eq 1 ]]
+	then
+		znak_do_planszy=1
+	fi
+	while [[ $dobre_pole -eq 0 ]]
+	do
+		wybrane_pole=$((1 + $RANDOM % 9))
+		wybrane_pole=$((wybrane_pole - 1))
+		echo $1
+		if [ "${plansza[$wybrane_pole]}" == 5 ]
+		then
+			dobre_pole=1
+			plansza[$wybrane_pole]=$znak_do_planszy
+			if [[ $znak_do_planszy -eq 1 ]]
+			then
+				ruch_gracza=1
+			else
+				ruch_gracza=0
+			fi
+		fi
+	done
+}
+
+function przeciw_komputerowi()
+{
+	echo "czy zagrac przeciw komputerowi? TAK:1 NIE:2"
+	read czy_komputer
+	while [[ $((czy_komputer)) -ne 1 && $((czy_komputer)) -ne 2 ]]
+	do
+		echo "niepoprawny wybor! czy zagrac przeciw komputerowi TAK:1 NIE:2"
+		read czy_komputer
+	done
+	if [[ $((czy_komputer)) -eq 1 ]]
+	then
+		echo "Komputer gra: KRZYZYK:1 KOLKO:2"
+		read znak_komputera
+		while [[ $((znak_komputera)) -ne 1 && $((znak_komputera)) -ne 2 ]]
+		do
+			echo "Niepoprawny wybor znaku, ktorym gra komputer"
+			read znak_komputera
+		done
+	fi
+}
+
+
+
+function koniec_ruchow()
+{
+	mozliwy_ruch=0
+	for POLE in {0..8}
+	do
+		if [[ ${plansza[$POLE]} -eq 5 ]]
+		then
+			mozliwy_ruch=1
+		fi
+	done
+	if [[ $mozliwy_ruch -eq 0 ]]
+	then
+		echo "remis"
+		koniec_gry=1
+		reset
+		bash ./kolkokrzyzyk
+	fi
+}
+
+function reset()
+{
+	koniec_gry=0
+	poprawne_pole=0
+	ruch_gracza=0
+	czy_komputer=1
+	znak_komputera=2
+	plansza=(5 5 5 5 5 5 5 5 5)
+	wczytano_gre=0
+}
+while [ $wyjdz -ne 1 ]
+do
+	reset
+	echo "aby wyjsc z gry wpisz 1, aby rozpoczac rozgrywke wpisz 2"
+	read wyjdz
+	if [[ $wyjdz -eq 1 ]]
+	then
+		exit
+	fi
+	wczytaj_gre
+	if [[ $wczytano_gre -ne 1 ]]
+	then
+		przeciw_komputerowi
+	fi
+	while [ $koniec_gry -eq 0 ]
+	do
+		wyswietl_plansze
+		if [[ $czy_komputer -eq 1 && $znak_komputera -eq 1 && $ruch_gracza -eq 0 ]]
+		then
+			ruch_komputera "$znak_kompuetra"
+		elif [[ $ruch_gracza -eq 0 ]]
+		then
+			wybor_opcji 0
+		fi
+		wyswietl_plansze
+		wygrana
+		if [ $koniec_gry -eq 0 ]
+		then
+			koniec_ruchow
+			if [[ $czy_komputer -eq 1 && $znak_komputera -eq 2 && $ruch_gracza -eq 1 ]]
+			then
+				ruch_komputera "$znak_kompuetra"
+			elif [[ $ruch_gracza -eq "1" ]]
+			then
+				wybor_opcji 1
+				wygrana
+				if [[ $koniec_gry -eq 0 ]]
+				then
+					koniec_ruchow
+				fi
+			fi
+		fi
+	done
+done
